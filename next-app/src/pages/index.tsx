@@ -1,70 +1,68 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import Head from "next/head";
+import { useCallback, useState } from "react";
+import styles from "@/styles/Home.module.css";
+import IPLocationForm from "@/components/forms/IPLocationForm";
+import { IIPLocationFormData } from "@/components/forms/IPLocationForm/models";
+import { ICoordinates } from "@/shared/models";
+import Card from "@/components/Card";
 
 export default function Home() {
+  const [ipAddress, setIPAddress] = useState<string | undefined>();
+  const [coordinates, setCoordinates] = useState<ICoordinates | undefined>();
+  const [message, setMessage] = useState<string>("");
+
+  const handleSubmit = useCallback(
+    async (values: IIPLocationFormData) => {
+      setIPAddress(undefined);
+      setCoordinates(undefined);
+      setMessage("");
+      try {
+        const response = await fetch(`/api/coordinates?ip=${values.ipAddress}`);
+        const result = (await response.json()) as ICoordinates[];
+        if (result?.[0]) {
+          setIPAddress(values.ipAddress);
+          setCoordinates(result[0]);
+        } else {
+          setMessage("Given IP address not found in database.");
+        }
+      } catch (e) {
+        setMessage("Server error. Please try again.");
+        console.log(e);
+      }
+    },
+    [setCoordinates]
+  );
+
   return (
-    <div className={styles.container}>
+    <>
       <Head>
-        <title>Create Next app</title>
+        <title>IP Coordinates Locator</title>
+        <meta name="description" content="IP Coordinates Locator" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js</a> on Docker Compose!
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.tsx</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
+        <Card>
+          <h1 className={styles.header}>IP Coordinates Locator</h1>
+          <IPLocationForm onSubmit={handleSubmit} />
+          {!!message && <div className={styles.message}>{message}</div>}
+          {!!ipAddress && !!coordinates?.latitude && !!coordinates?.longitude && (
+            <div className={styles.result}>
+              <ul>
+                <li>
+                  <span>IP Address: </span> {ipAddress}
+                </li>
+                <li>
+                  <span>Latitude: </span> {coordinates.latitude}
+                </li>
+                <li>
+                  <span>Longitude: </span> {coordinates.longitude}
+                </li>
+              </ul>
+            </div>
+          )}
+        </Card>
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
-    </div>
-  )
+    </>
+  );
 }
