@@ -1,44 +1,25 @@
-# With Docker Compose
+# IP Coordinates Locator
 
-This example contains everything needed to get a Next.js development and production environment up and running with Docker Compose.
+This web app is a simple form that takes an ip address and returns it's associated longitude and latitude as determined by MaxMind GeoLite2.
 
-## Benefits of Docker Compose
+This project demonstrates usage of the following:
+* @maxmind/geoip2-node
+* Docker Compose
+* Node.js
+* Next.js
+* React.js
+* Formik
+* Yup
+* CSS Modules
 
-- Develop locally without Node.js or TypeScript installed ✨
-- Easy to run, consistent development environment across macOS, Windows, and Linux teams
-- Run multiple Next.js apps, databases, and other microservices in a single deployment
-- Multistage builds combined with [Output Standalone](https://nextjs.org/docs/advanced-features/output-file-tracing#automatically-copying-traced-files) outputs up to 85% smaller apps (Approximately 110 MB compared to 1 GB with create-next-app)
-- Easy configuration with YAML files
-
-## How to use
-
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init), [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/), or [pnpm](https://pnpm.io) to bootstrap the example:
-
-```bash
-npx create-next-app --example with-docker-compose with-docker-compose-app
-```
-
-```bash
-yarn create next-app --example with-docker-compose with-docker-compose-app
-```
-
-```bash
-pnpm create next-app --example with-docker-compose with-docker-compose-app
-```
-
-Optionally, after the installation is complete:
-
-- Run `cd next-app`, then run `npm install` or `yarn install` or `pnpm install` to generate a lockfile.
-
-It is recommended to commit a lockfile to version control. Although the example will work without one, build errors are more likely to occur when using the latest version of all dependencies. This way, we're always using a known good configuration to develop and run in production.
 
 ## Prerequisites
 
 Install [Docker Desktop](https://docs.docker.com/get-docker) for Mac, Windows, or Linux. Docker Desktop includes Docker Compose as part of the installation.
 
-## Development
+## How to Run
 
-First, run the development server:
+To run in development mode, do the following:
 
 ```bash
 # Create a network, which allows containers to communicate
@@ -56,48 +37,45 @@ docker-compose -f docker-compose.dev.yml up
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## Test Cases
 
-## Production
+To assure that the application is working properly, please run the following test cases
 
-Multistage builds are highly recommended in production. Combined with the Next [Output Standalone](https://nextjs.org/docs/advanced-features/output-file-tracing#automatically-copying-traced-files) feature, only `node_modules` files required for production are copied into the final Docker image.
+### Verify that the form doesn't submit without data
 
-First, run the production server (Final image approximately 110 MB).
+1. On the home page, leave the input field blank
+2. Click "Submit"
+3. Verify that the message "IP address is required" is displayed
 
-```bash
-# Create a network, which allows containers to communicate
-# with each other, by using their container name as a hostname
-docker network create my_network
+### Verify that the form only accepts a valid IP address
 
-# Build prod
-docker-compose -f docker-compose.prod.yml build
+1. On the home page, in the input field, enter a string with letters
+2. Click "Submit" or hit the tab key
+3. Verify that the message "IP address is not in correct format" is displayed
 
-# Up prod in detached mode
-docker-compose -f docker-compose.prod.yml up -d
-```
+### Verify that a local ip address is not in the database
 
-Alternatively, run the production server without without multistage builds (Final image approximately 1 GB).
+1. On the home page, enter "192.168.1.1" into the input field
+2. Click "Submit"
+3. Verify that the message "Given IP address not found in database" is displayed
 
-```bash
-# Create a network, which allows containers to communicate
-# with each other, by using their container name as a hostname
-docker network create my_network
+### Verify that duckduckgo.com is in the database
 
-# Build prod without multistage
-docker-compose -f docker-compose.prod-without-multistage.yml build
+1. On the home page, enter "40.89.244.232" into the input field
+2. Click "Submit"
+3. Verify that the returned coordinates are:
+   - Latitude: 41.6021
+   - Longitude -93.6124
 
-# Up prod without multistage in detached mode
-docker-compose -f docker-compose.prod-without-multistage.yml up -d
-```
+### Verify that twitter.com is in the database
 
-Open [http://localhost:3000](http://localhost:3000).
+1. On the home page, enter "104.244.42.193" into the input field
+2. Click "Submit"
+3. Verify that the returned coordinates are:
+   - Latitude: 37.751
+   - Longitude -97.822
 
-## Useful commands
 
-```bash
-# Stop all running containers
-docker kill $(docker ps -aq) && docker rm $(docker ps -aq)
-
-# Free space
-docker system prune -af --volumes
-```
+# Additional Testing/Possible Enhancements
+* Automated testing using Jest, Cypress, React Testing Library or other frameworks could be used
+* Additional data could be pulled out of the city data used in @maxmind/geoip2-node
