@@ -15,7 +15,12 @@ This project demonstrates usage of the following:
 
 ## Prerequisites
 
-Install [Docker Desktop](https://docs.docker.com/get-docker) for Mac, Windows, or Linux. Docker Desktop includes Docker Compose as part of the installation.
+* Install [Docker Desktop](https://docs.docker.com/get-docker) for Mac, Windows, or Linux. Docker Desktop includes Docker Compose as part of the installation.
+* Download MaxMind GeoLite2 City database from: https://dev.maxmind.com/geoip/geoip2/geolite2/ 
+* After downloading GeoLit2 and cloning this repository, put the downloaded database file (GeoLite2-City.mmdb) in the following directory:
+`/src/db`
+
+Note that normally, the database would be kept outside the src folder or we would instead use a web api, but for simplification of deployment, this works for our purposes.
 
 ## How to Run
 
