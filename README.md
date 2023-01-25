@@ -1,6 +1,6 @@
 # IP Coordinates Locator
 
-This web app is a simple form that takes an ip address and returns it's associated longitude and latitude as determined by MaxMind GeoLite2.
+This web app is a simple form that takes an ip address and returns its associated longitude and latitude as determined by MaxMind GeoLite2.
 
 This project demonstrates usage of the following:
 * @maxmind/geoip2-node
